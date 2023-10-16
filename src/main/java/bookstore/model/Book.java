@@ -31,5 +31,4 @@ public class Book {
 
     private String description;
     private String coverImage;
-
 }

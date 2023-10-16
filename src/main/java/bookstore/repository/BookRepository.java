@@ -1,10 +1,10 @@
 package bookstore.repository;
 
 import bookstore.model.Book;
-import org.hibernate.mapping.List;
+import java.util.List;
 
 public interface BookRepository {
     Book save(Book book);
 
-    List findAll();
+    List<Book> findAll();
 }
