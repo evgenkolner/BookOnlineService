@@ -8,11 +8,11 @@
         <version>3.1.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>s.volodymyr</groupId>
-    <artifactId>online-book-store</artifactId>
+    <groupId>com.example</groupId>
+    <artifactId>BookOnlineService</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>online-book-store</name>
-    <description>online-book-store</description>
+    <name>BookOnlineService</name>
+    <description>BookOnlineService</description>
     <properties>
         <maven.checkstyle.plugin.configLocation>checkstyle.xml</maven.checkstyle.plugin.configLocation>
         <java.version>17</java.version>
@@ -80,7 +80,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <phase>compile</phase>
@@ -95,6 +95,7 @@
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
+                    <sourceDirectories>src</sourceDirectories>
                 </configuration>
             </plugin>
             <plugin>
