@@ -1,24 +1,20 @@
 package bookstore.repository;
 
 import bookstore.exception.DataProcessingException;
+import bookstore.exception.EntityNotFoundException;
 import bookstore.model.Book;
 import java.util.List;
+import java.util.Optional;
 import lombok.Data;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Data
 @Repository
 public class BookRepositoryImpl implements BookRepository {
     private final SessionFactory sessionFactory;
-
-    @Autowired
-    public BookRepositoryImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
 
     @Override
     public Book save(Book book) {
@@ -40,9 +36,18 @@ public class BookRepositoryImpl implements BookRepository {
     public List<Book> findAll() {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery(
-                    "select b from Book b", Book.class).getResultList();
+                    "from Book", Book.class).getResultList();
         } catch (Exception e) {
-            throw new DataProcessingException("Can't find any books from DB", e);
+            throw new EntityNotFoundException("Can't find any books from DB", e);
+        }
+    }
+
+    @Override
+    public Optional<Book> getBookByID(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.find(Book.class, id));
+        } catch (Exception e) {
+            throw new EntityNotFoundException("Can`t find book by id " + id, e);
         }
     }
 }
