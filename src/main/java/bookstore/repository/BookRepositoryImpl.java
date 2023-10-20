@@ -5,14 +5,14 @@ import bookstore.exception.EntityNotFoundException;
 import bookstore.model.Book;
 import java.util.List;
 import java.util.Optional;
-import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
-@Data
 @Repository
+@RequiredArgsConstructor
 public class BookRepositoryImpl implements BookRepository {
     private final SessionFactory sessionFactory;
 
