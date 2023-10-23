@@ -42,12 +42,11 @@ public class BookController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
-    public BookDto updateById(@PathVariable Long id,
-                              @RequestBody CreateBookRequestDto bookRequestDto) {
-        return bookService.updateById(id, bookRequestDto);
+    public BookDto update(@RequestBody CreateBookRequestDto bookRequestDto, @PathVariable Long id) {
+        return bookService.update(bookRequestDto, id);
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         bookService.deleteById(id);
