@@ -1,8 +1,8 @@
 package bookstore.dto;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import lombok.Data;
 
@@ -13,8 +13,7 @@ public class CreateBookRequestDto {
     private String title;
     @NotNull
     private String author;
-    @NotNull @Pattern(
-            regexp = "^(?=(?:[^0-9]*[0-9]){10}(?:(?:[^0-9]*[0-9]){3})?$)[\\\\d-]+$")
+    @NotNull @Size(min = 5, max = 10)
     private String isbn;
     @NotNull
     @PositiveOrZero
