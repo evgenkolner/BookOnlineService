@@ -16,6 +16,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
+
     @Override
     public UserResponseDto register(UserRegistrationRequest request) throws RegistrationException {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
