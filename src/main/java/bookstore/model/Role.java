@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "roles")
@@ -17,7 +18,7 @@ import org.hibernate.annotations.Where;
 @SQLDelete(sql = "UPDATE roles SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
 @NoArgsConstructor
-public class Role {
+public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,4 +29,8 @@ public class Role {
     @Column(name = "is_deleted")
     private boolean isDeleted = false;
 
+    @Override
+    public String getAuthority() {
+        return name.name();
+    }
 }
