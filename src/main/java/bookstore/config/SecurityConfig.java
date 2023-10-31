@@ -1,6 +1,7 @@
 package bookstore.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
+
 import bookstore.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +37,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth
-                                .requestMatchers("/auth/**")
+                                .requestMatchers("api/auth/**")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
