@@ -1,6 +1,6 @@
 package bookstore.service;
 
-import bookstore.dto.user.UserRegistrationRequest;
+import bookstore.dto.user.UserRegistrationRequestDto;
 import bookstore.dto.user.UserResponseDto;
 import bookstore.exception.RegistrationException;
 import bookstore.mapper.UserMapper;
@@ -12,9 +12,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -23,18 +23,15 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
 
     @Override
-    public UserResponseDto register(UserRegistrationRequest request) throws RegistrationException {
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+    public UserResponseDto register(UserRegistrationRequestDto request)
+            throws RegistrationException {
+        if (userRepository.findByEmail(request.email()).isPresent()) {
             throw new RegistrationException("Unable to complete registration");
         }
-        User user = new User();
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
+        User user = userMapper.toUser(request);
+        user.setPassword(passwordEncoder.encode(request.password()));
         user.setRoles(new HashSet<>(Arrays.asList(
                 roleRepository.findRoleByName(RoleName.ROLE_USER))));
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setShippingAddress(request.getShippingAddress());
         User savedUser = userRepository.save(user);
         return userMapper.toUseResponse(savedUser);
     }
