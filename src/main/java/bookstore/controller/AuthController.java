@@ -21,7 +21,7 @@ public class AuthController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
-    @PostMapping(value = "/login")
+    @PostMapping("/login")
     public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto requestDto) {
         return authenticationService.authenticate(requestDto);
     }

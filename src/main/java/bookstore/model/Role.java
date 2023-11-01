@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,7 +18,6 @@ import org.springframework.security.core.GrantedAuthority;
 @Data
 @SQLDelete(sql = "UPDATE roles SET is_deleted = true WHERE id = ?")
 @Where(clause = "is_deleted = false")
-@NoArgsConstructor
 public class Role implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
