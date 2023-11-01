@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
         field = "password", fieldMatch = "repeatPassword", message = "Password is incorrect")
 public record UserRegistrationRequestDto(
         @NotBlank
-        @Size(min = 6, max = 50)
+        @Size(min = 6, max = 255)
         String email,
 
         @NotBlank
@@ -18,11 +18,11 @@ public record UserRegistrationRequestDto(
         String lastName,
 
         @NotBlank
-        @Size(min = 6, max = 50)
+        @Size(min = 6, max = 255)
         String password,
 
         @NotBlank
-        @Size(min = 6, max = 50)
+        @Size(min = 6, max = 255)
         String repeatPassword,
         String shippingAddress) {
 }
