@@ -27,6 +27,6 @@ public record UserRegistrationRequestDto(
         @Size(min = 6, max = 60)
         String repeatPassword,
 
-        @Size(min = 6, max = 60)
+        @Size(min = 6, max = 255)
         String shippingAddress) {
 }
