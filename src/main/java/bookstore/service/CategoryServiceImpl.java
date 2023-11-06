@@ -6,11 +6,10 @@ import bookstore.exception.EntityNotFoundException;
 import bookstore.mapper.CategoryMapper;
 import bookstore.model.Category;
 import bookstore.repository.CategoryRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +40,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto update(Long id, CreateCategoryRequestDto categoryDto) {
-        Category category = categoryRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Can`t find category by id " + id)
+        Category category = categoryRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can`t find category by id " + id)
         );
         categoryMapper.updateCategory(categoryDto, category);
         return categoryMapper.toDto(categoryRepository.save(category));
