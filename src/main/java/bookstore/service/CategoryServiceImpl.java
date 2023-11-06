@@ -7,7 +7,6 @@ import bookstore.mapper.CategoryMapper;
 import bookstore.model.Category;
 import bookstore.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
