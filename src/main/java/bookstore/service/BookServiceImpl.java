@@ -1,12 +1,15 @@
 package bookstore.service;
 
 import bookstore.dto.BookDto;
+import bookstore.dto.BookWithoutCategoryDto;
 import bookstore.dto.CreateBookRequestDto;
 import bookstore.exception.EntityNotFoundException;
 import bookstore.mapper.BookMapper;
 import bookstore.model.Book;
 import bookstore.repository.BookRepository;
 import java.util.List;
+
+import bookstore.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public BookDto save(CreateBookRequestDto requestDto) {
@@ -50,5 +54,16 @@ public class BookServiceImpl implements BookService {
         bookMapper.updateBook(bookRequestDto, book);
         book.setId(id);
         return bookMapper.toDto(bookRepository.save(book));
+    }
+
+    @Override
+    public List<BookWithoutCategoryDto> getBooksByCategoryId(Long id, Pageable pageable) {
+        if (!categoryRepository.existsById(id)) {
+            throw new EntityNotFoundException("Category with id " + id + " doesn't exist");
+        }
+        return bookRepository.findAllByCategoriesId(id, pageable)
+                .stream()
+                .map(bookMapper::toDtoWithoutCategory)
+                .toList();
     }
 }
