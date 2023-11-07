@@ -5,6 +5,7 @@ import bookstore.dto.BookWithoutCategoryDto;
 import bookstore.dto.CreateBookRequestDto;
 import bookstore.model.Book;
 import bookstore.model.Category;
+import java.util.stream.Collectors;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -30,5 +31,12 @@ public interface BookMapper {
                 .stream()
                 .map(Category::getId)
                 .toList());
+    }
+
+    @AfterMapping
+    default void setCategories(@MappingTarget Book book, CreateBookRequestDto bookDto) {
+        book.setCategories(bookDto.categoryIds().stream()
+                .map(Category::new)
+                .collect(Collectors.toSet()));
     }
 }
