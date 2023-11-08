@@ -1,6 +1,8 @@
 package bookstore.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
@@ -13,5 +15,7 @@ public record CreateBookRequestDto(@NotNull String title,
                                    @NotNull @PositiveOrZero BigDecimal price,
                                    String description,
                                    String coverImage,
-                                   List<Long> categoryIds) {
+
+                                   @NotEmpty
+                                   List<@Positive Long> categoryIds) {
 }
