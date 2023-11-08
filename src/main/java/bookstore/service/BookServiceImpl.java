@@ -1,6 +1,7 @@
 package bookstore.service;
 
 import bookstore.dto.BookDto;
+import bookstore.dto.BookWithoutCategoryDto;
 import bookstore.dto.CreateBookRequestDto;
 import bookstore.exception.EntityNotFoundException;
 import bookstore.mapper.BookMapper;
@@ -32,7 +33,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto getBookById(Long id) {
-        return bookMapper.toDto((Book) bookRepository.getBookById(id)
+        return bookMapper.toDto(bookRepository.getBookById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Can`t find book by id " + id)));
 
     }
@@ -44,11 +45,19 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto update(CreateBookRequestDto bookRequestDto, Long id) {
-        Book book = (Book) bookRepository.getBookById(id).orElseThrow(
+        Book book = bookRepository.getBookById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can`t find book by id " + id)
         );
         bookMapper.updateBook(bookRequestDto, book);
         book.setId(id);
         return bookMapper.toDto(bookRepository.save(book));
+    }
+
+    @Override
+    public List<BookWithoutCategoryDto> getBooksByCategoryId(Long id, Pageable pageable) {
+        return bookRepository.findAllByCategoriesId(id, pageable)
+                .stream()
+                .map(bookMapper::toDtoWithoutCategory)
+                .toList();
     }
 }
