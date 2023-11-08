@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 public interface BookRepository extends JpaRepository<Book, Long>,
         JpaSpecificationExecutor<Book> {
     @EntityGraph(attributePaths = "categories")
-    Optional<Object> getBookById(Long id);
+    Optional<Book> getBookById(Long id);
 
     @EntityGraph(attributePaths = "categories")
     Page<Book> findAll(Pageable pageable);

@@ -45,7 +45,6 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "Get all categories", description = "Get all categories")
     public List<CategoryDto> getAll(@PageableDefault(size = 5) Pageable pageable) {

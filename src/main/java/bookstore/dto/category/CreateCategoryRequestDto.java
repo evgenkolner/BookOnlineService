@@ -9,6 +9,5 @@ public record CreateCategoryRequestDto(
         String name,
 
         @Size(max = 255)
-        String description
-) {
+        String description) {
 }
