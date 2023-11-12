@@ -5,6 +5,7 @@ import bookstore.dto.user.UserResponseDto;
 import bookstore.exception.RegistrationException;
 import bookstore.mapper.UserMapper;
 import bookstore.model.RoleName;
+import bookstore.model.ShoppingCart;
 import bookstore.model.User;
 import bookstore.repository.RoleRepository;
 import bookstore.repository.UserRepository;
@@ -34,5 +35,10 @@ public class UserServiceImpl implements UserService {
                 roleRepository.findRoleByName(RoleName.ROLE_USER))));
         User savedUser = userRepository.save(user);
         return userMapper.toUseResponse(savedUser);
+    }
+
+    private void setShoppingCartForUser(User user) {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setUser(user);
     }
 }
