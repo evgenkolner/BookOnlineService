@@ -30,6 +30,7 @@ public class UserServiceImpl implements UserService {
             throw new RegistrationException("Unable to complete registration");
         }
         User user = userMapper.toUser(request);
+        setShoppingCartForUser(user);
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setRoles(new HashSet<>(Arrays.asList(
                 roleRepository.findRoleByName(RoleName.ROLE_USER))));
