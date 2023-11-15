@@ -13,7 +13,6 @@ import org.mapstruct.NullValueCheckStrategy;
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
         implementationPackage = "<PACKAGE_NAME>.impl",
         uses = BookMapper.class)
-
 public interface CartItemMapper {
     CartItemRequestDto toCartItem(CartItemRequestDto requestDto);
 

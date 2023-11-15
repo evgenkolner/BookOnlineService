@@ -7,6 +7,7 @@ import bookstore.model.User;
 import bookstore.service.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @GetMapping
     @Operation(summary = "Get shopping cart", description = "Get shopping cart")
     public ShoppingCartDto getShoppingCart(Authentication authentication) {
@@ -39,29 +40,29 @@ public class ShoppingCartController {
         return shoppingCartService.findById(user.getId());
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @Operation(summary = "Add book to cart",
             description = "Add book to cart")
     public ShoppingCartDto addBookToCart(Authentication authentication,
-                                         @RequestBody CartItemRequestDto requestDto) {
+                                         @RequestBody @Valid CartItemRequestDto requestDto) {
         User user = (User) authentication.getPrincipal();
         return shoppingCartService.addToCart(user.getId(), requestDto);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @PutMapping(("/cart-items/{id}"))
     @Operation(summary = "Update cart item",
             description = "Update cart item")
     public ShoppingCartDto updateCartItem(Authentication authentication,
                                           @PathVariable @Positive Long id,
-                                          @RequestBody ShoppingCartRequestDto quantity) {
+                                          @RequestBody @Valid ShoppingCartRequestDto quantity) {
         User user = (User) authentication.getPrincipal();
         return shoppingCartService.update(user.getId(), id, quantity);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(("/cart-items/{id}"))
     @Operation(summary = "Delete cart item",
