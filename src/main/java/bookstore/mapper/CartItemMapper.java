@@ -14,7 +14,8 @@ import org.mapstruct.NullValueCheckStrategy;
         implementationPackage = "<PACKAGE_NAME>.impl",
         uses = BookMapper.class)
 public interface CartItemMapper {
-    CartItemRequestDto toCartItem(CartItemRequestDto requestDto);
+    //CartItemRequestDto toCartItem(CartItemRequestDto requestDto);
+    CartItem toCartItem(CartItemRequestDto requestDto);
 
     @Mapping(source = "book.title", target = "bookTitle")
     @Mapping(source = "book.id", target = "bookId")
