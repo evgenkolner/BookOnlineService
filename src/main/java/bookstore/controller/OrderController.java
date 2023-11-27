@@ -17,6 +17,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,13 +29,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Order management", description = "Order management")
 @RequiredArgsConstructor
+@Validated
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
     private final OrderService orderService;
 
     @PreAuthorize("hasRole('USER')")
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Operation(summary = "Get orders", description = "Get orders")
     public List<OrderDto> getOrders(Authentication authentication,
@@ -54,7 +56,7 @@ public class OrderController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.CREATED)
     @PatchMapping("/{id}")
     @Operation(summary = "Update order", description = "Update order")
     public OrderDto updateOrder(@RequestBody @Valid UpdateOrderStatusDto updateOrderStatusDto,
@@ -63,7 +65,7 @@ public class OrderController {
     }
 
     @PreAuthorize("hasRole('USER')")
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}/items")
     @Operation(summary = "Get order items by order id", description = "Get order items by order id")
     public List<OrderItemDto> getItemsByOrderId(@PageableDefault Pageable pageable,

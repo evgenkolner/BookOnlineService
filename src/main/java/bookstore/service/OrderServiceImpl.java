@@ -28,6 +28,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemRepository orderItemRepository;
     private final ShoppingCartRepository shoppingCartRepository;
 
+    @Transactional
     @Override
     public List<OrderDto> getAllById(Pageable pageable, Long id) {
         return orderRepository.findAllByUserId(pageable, id).stream()
@@ -47,6 +48,7 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toDto(order);
     }
 
+    @Transactional
     @Override
     public OrderDto update(Long orderId, UpdateOrderStatusDto updateDto) {
         Order order = orderRepository.findById(orderId).orElseThrow(
@@ -56,6 +58,7 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toDto(order);
     }
 
+    @Transactional
     @Override
     public List<OrderItemDto> getItemsByOrderId(Pageable pageable, Long orderId) {
         return orderItemRepository.findAllByOrderId(pageable, orderId).stream()
@@ -63,6 +66,7 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
+    @Transactional
     @Override
     public OrderItemDto getItemByOrderIdAndItemId(Long orderId, Long itemId) {
         OrderItem orderItem = orderItemRepository.findByIdAndOrderId(itemId, orderId)
