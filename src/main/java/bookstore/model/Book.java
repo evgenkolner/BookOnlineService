@@ -48,7 +48,7 @@ public class Book {
     private String description;
     private String coverImage;
 
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "book")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "book", orphanRemoval = true)
     private Set<CartItem> cartItems = new HashSet<>();
 
     @ManyToMany
