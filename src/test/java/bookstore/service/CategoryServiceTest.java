@@ -34,7 +34,7 @@ class CategoryServiceTest {
 
     @Test
     @DisplayName("Find all categories")
-    void findAll() {
+    void findAll_CategoriesFromDb_ReturnAllCategories() {
         Long id = 1L;
         Category category = defaultCategory(id);
 
@@ -56,7 +56,7 @@ class CategoryServiceTest {
 
     @Test
     @DisplayName("Find category by id")
-    void getCategoryById() {
+    void getCategoryById_ValidId_ReturnedCategoryById() {
         Long id = 1L;
         Category category = defaultCategory(id);
 
@@ -73,7 +73,7 @@ class CategoryServiceTest {
 
     @Test
     @DisplayName("Create new category")
-    void save() {
+    void save_Valid_CreateCategoryRequestDto_ReturnedNewCategory() {
         Long id = 1L;
         Category category = defaultCategory(id);
 

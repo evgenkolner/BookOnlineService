@@ -70,7 +70,7 @@ class BookServiceTest {
 
     @Test
     @DisplayName("Find all books")
-    void findAll() {
+    void findAll_BooksFromDb_ReturnAllBooks() {
         long id = 1L;
         Book book = defaultBook(id);
 
@@ -98,7 +98,7 @@ class BookServiceTest {
 
     @Test
     @DisplayName("Find book by id")
-    void getBookById() {
+    void getBookById_ValidId_ReturnBookById() {
         Long id = 1L;
         Book book = defaultBook(id);
 
@@ -122,7 +122,7 @@ class BookServiceTest {
 
     @Test
     @DisplayName("Delete book by id")
-    void deleteById() {
+    void deleteById_ValidId_Deleted() {
         Long id = 1L;
         bookService.deleteById(id);
         verify(bookRepository, times(1)).deleteById(id);
