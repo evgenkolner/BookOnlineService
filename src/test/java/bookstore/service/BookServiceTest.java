@@ -32,8 +32,6 @@ class BookServiceTest {
     @Mock
     private BookRepository bookRepository;
     @Mock
-    private CategoryRepository categoryRepository;
-    @Mock
     private BookMapper bookMapper;
     @InjectMocks
     private BookServiceImpl bookService;
