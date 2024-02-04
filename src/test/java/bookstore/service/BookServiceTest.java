@@ -11,7 +11,6 @@ import bookstore.mapper.BookMapper;
 import bookstore.model.Book;
 import bookstore.model.Category;
 import bookstore.repository.BookRepository;
-import bookstore.repository.CategoryRepository;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
