@@ -1,32 +1,123 @@
 package bookstore.controller;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+import bookstore.dto.BookDto;
+import bookstore.dto.CreateBookRequestDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BookControllerTest {
 
-    @BeforeEach
-    void setUp() {
-    }
+    protected static MockMvc mockMvc;
 
-    @AfterEach
-    void tearDown() {
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @BeforeAll
+    static void beforeAll(@Autowired WebApplicationContext applicationContext) {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(applicationContext)
+                .apply(springSecurity())
+                .build();
     }
 
     @Test
-    void getAll() {
+    @Sql(
+            scripts = "classpath:database/books/remove-all-books-from-books-table.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
+    )
+    @DisplayName("Create new book")
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void createBook_ValidBookRequestDto_ReturnedNewBook() throws Exception {
+
+        CreateBookRequestDto requestDto = new CreateBookRequestDto(
+                "Book","Author","11111", BigDecimal.valueOf(99.99),
+                "description","picture", List.of()
+        );
+
+        String jsonRequest = objectMapper.writeValueAsString(requestDto);
+        System.out.println(jsonRequest);
+
+        MvcResult result = mockMvc.perform(
+                post("api/books")
+                .content(jsonRequest)
+                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        BookDto expected = new BookDto()
+                .setTitle(requestDto.title())
+                .setAuthor(requestDto.author())
+                .setIsbn(requestDto.isbn())
+                .setPrice(requestDto.price())
+                .setDescription(requestDto.description())
+                .setCoverImage(requestDto.coverImage())
+                .setCategoryIds(requestDto.categoryIds());
+
+        BookDto actual = objectMapper.readValue(result.getResponse()
+                        .getContentAsString(), BookDto.class);
+
+        Assertions.assertNotNull(actual);
+        Assertions.assertNotNull(actual.getId());
+        EqualsBuilder.reflectionEquals(expected, actual, "id");
+    }
+
+    @Test
+    @Sql(scripts = "classpath:database/books/add-three-books-to-books-table.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/books/remove-all-books-from-books-table.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @DisplayName("Get all books")
+    void getAll_BooksFromDb_ReturnAllBooks() throws Exception {
+        List<BookDto> expected = new ArrayList<>();
+        expected.add(new BookDto().setId(1L).setTitle("Title1").setAuthor("Author1")
+                .setIsbn("isbn1").setDescription("Description1")
+                .setCoverImage("image1").setCategoryIds(List.of()));
+        expected.add(new BookDto().setId(2L).setTitle("Title2").setAuthor("Author2")
+                .setIsbn("isbn2").setDescription("Description2")
+                .setCoverImage("image2").setCategoryIds(List.of()));
+        expected.add(new BookDto().setId(3L).setTitle("Title3").setAuthor("Author3")
+                .setIsbn("isbn3").setDescription("Description3")
+                .setCoverImage("image3").setCategoryIds(List.of()));
+
+        MvcResult result = mockMvc.perform(
+                get("/api/books")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        BookDto[] actual = objectMapper.readValue(result.getResponse()
+                        .getContentAsByteArray(), BookDto[].class);
+        Assertions.assertEquals(3, actual.length);
+        Assertions.assertEquals(expected, Arrays.stream(actual).toList());
+
     }
 
     @Test
     void getBookById() {
-    }
-
-    @Test
-    void createBook() {
     }
 
     @Test

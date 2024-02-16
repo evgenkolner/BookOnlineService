@@ -94,7 +94,7 @@ class CategoryServiceTest {
 
     @Test
     @DisplayName("Delete category by id")
-    void deleteById() {
+    void deleteById_ValidId_Deleted() {
         Long id = 1L;
         categoryService.deleteById(id);
         verify(categoryRepository, times(1)).deleteById(id);
