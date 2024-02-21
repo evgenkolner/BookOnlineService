@@ -127,7 +127,7 @@ class BookServiceTest {
         verify(bookRepository, times(1)).deleteById(id);
     }
 
-    Book defaultBook(Long id) {
+    private Book defaultBook(Long id) {
         Book book = new Book();
         book.setId(id);
         book.setTitle("Book");

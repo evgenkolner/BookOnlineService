@@ -43,25 +43,25 @@ class BookControllerTest {
                 .build();
     }
 
+    @WithMockUser(username = "user", roles = {"USER", "ADMIN"})
     @Test
-    @Sql(
-            scripts = "classpath:database/books/remove-all-books-from-books-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
-    )
+    @Sql(scripts = "classpath:database/categories/add-category-to-categories-table.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = {"classpath:database/books/remove-all-books-from-books-table.sql",
+            "classpath:database/categories/remove-category-from-categories-table.sql"},
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("Create new book")
-    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void createBook_ValidBookRequestDto_ReturnedNewBook() throws Exception {
 
         CreateBookRequestDto requestDto = new CreateBookRequestDto(
                 "Book","Author","11111", BigDecimal.valueOf(99.99),
-                "description","picture", List.of()
+                "description","picture", List.of(1L)
         );
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
-        System.out.println(jsonRequest);
 
         MvcResult result = mockMvc.perform(
-                post("api/books")
+                post("/api/books")
                 .content(jsonRequest)
                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -85,6 +85,7 @@ class BookControllerTest {
         EqualsBuilder.reflectionEquals(expected, actual, "id");
     }
 
+    @WithMockUser(username = "user")
     @Test
     @Sql(scripts = "classpath:database/books/add-three-books-to-books-table.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -94,19 +95,19 @@ class BookControllerTest {
     void getAll_BooksFromDb_ReturnAllBooks() throws Exception {
         List<BookDto> expected = new ArrayList<>();
         expected.add(new BookDto().setId(1L).setTitle("Title1").setAuthor("Author1")
-                .setIsbn("isbn1").setDescription("Description1")
+                .setIsbn("isbn1").setPrice(BigDecimal.valueOf(1)).setDescription("Description1")
                 .setCoverImage("image1").setCategoryIds(List.of()));
         expected.add(new BookDto().setId(2L).setTitle("Title2").setAuthor("Author2")
-                .setIsbn("isbn2").setDescription("Description2")
+                .setIsbn("isbn2").setPrice(BigDecimal.valueOf(2)).setDescription("Description2")
                 .setCoverImage("image2").setCategoryIds(List.of()));
         expected.add(new BookDto().setId(3L).setTitle("Title3").setAuthor("Author3")
-                .setIsbn("isbn3").setDescription("Description3")
+                .setIsbn("isbn3").setPrice(BigDecimal.valueOf(3)).setDescription("Description3")
                 .setCoverImage("image3").setCategoryIds(List.of()));
 
         MvcResult result = mockMvc.perform(
                 get("/api/books")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isAccepted())
                 .andReturn();
 
         BookDto[] actual = objectMapper.readValue(result.getResponse()
