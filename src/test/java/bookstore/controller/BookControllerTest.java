@@ -1,6 +1,7 @@
 package bookstore.controller;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -43,7 +44,7 @@ class BookControllerTest {
                 .build();
     }
 
-    @WithMockUser(username = "user", roles = {"USER", "ADMIN"})
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     @Test
     @Sql(scripts = "classpath:database/categories/add-category-to-categories-table.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -117,15 +118,45 @@ class BookControllerTest {
 
     }
 
+    @WithMockUser(username = "user")
     @Test
-    void getBookById() {
+    @Sql(scripts = "classpath:database/books/add-one-book-to-books-table.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/books/remove-all-books-from-books-table.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @DisplayName("Get book by valid id")
+    void getBookById_ValidId_ReturnedBook() throws Exception {
+        Long id = 1L;
+
+        BookDto expected = new BookDto()
+                .setId(id).setTitle("Title1").setAuthor("Author1")
+                .setIsbn("isbn1").setPrice(BigDecimal.valueOf(1)).setDescription("Description1")
+                .setCoverImage("image1").setCategoryIds(List.of());
+
+        MvcResult result = mockMvc.perform(
+                        get("/api/books/" + id)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andReturn();
+
+        BookDto actual = objectMapper.readValue(
+                result.getResponse().getContentAsString(), BookDto.class);
+
+        Assertions.assertEquals(expected, actual);
     }
 
+    @WithMockUser(username = "user", roles = {"ADMIN"})
     @Test
-    void update() {
-    }
+    @DisplayName("Delete book with valid id")
+    @Sql(scripts = "classpath:database/books/add-one-book-to-books-table.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void delete_ValidId_IsOk() throws Exception {
+        Long id = 1L;
 
-    @Test
-    void delete() {
+        MvcResult result = mockMvc.perform(
+                        delete("/api/books/" + id)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
     }
 }
