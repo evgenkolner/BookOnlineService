@@ -102,7 +102,7 @@ class CategoryServiceTest {
         verify(categoryRepository, times(1)).deleteById(id);
     }
 
-    Category defaultCategory(Long id) {
+    private Category defaultCategory(Long id) {
         Category category = new Category();
         category.setId(id);
         category.setName("Category");
