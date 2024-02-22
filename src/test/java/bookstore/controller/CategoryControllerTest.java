@@ -9,6 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import bookstore.dto.category.CategoryDto;
 import bookstore.dto.category.CreateCategoryRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -68,6 +71,33 @@ class CategoryControllerTest {
         Assertions.assertNotNull(actual);
         Assertions.assertNotNull(actual.id());
         EqualsBuilder.reflectionEquals(expected, actual, "id");
+    }
+
+    @WithMockUser(username = "user")
+    @Test
+    @Sql(scripts = {"classpath:database/categories/remove-category-from-categories-table.sql",
+            "classpath:database/categories/add-three-categories-to-categories-table.sql"},
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/categories/remove-category-from-categories-table.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @DisplayName("Get all categories")
+    void getAll_CategoriesFromDb_ReturnAllCategories() throws Exception {
+        List<CategoryDto> expected = new ArrayList<>();
+        expected.add(new CategoryDto(1L, "category1", "description1"));
+        expected.add(new CategoryDto(2L, "category2", "description2"));
+        expected.add(new CategoryDto(3L, "category3", "description3"));
+
+        MvcResult result = mockMvc.perform(
+                        get("/api/categories")
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted())
+                .andReturn();
+
+        CategoryDto[] actual = objectMapper.readValue(result.getResponse()
+                .getContentAsByteArray(), CategoryDto[].class);
+        Assertions.assertEquals(3, actual.length);
+        Assertions.assertEquals(expected, Arrays.stream(actual).toList());
+
     }
 
     @WithMockUser(username = "user")
