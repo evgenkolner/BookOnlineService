@@ -28,6 +28,9 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = "classpath:database/categories/remove-category-from-categories-table.sql",
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:database/categories/add-three-categories-to-categories-table.sql")
 class CategoryControllerTest {
 
     protected static MockMvc mockMvc;
@@ -45,8 +48,6 @@ class CategoryControllerTest {
 
     @WithMockUser(username = "user", roles = {"ADMIN"})
     @Test
-    @Sql(scripts = "classpath:database/categories/remove-category-from-categories-table.sql",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("Create new category")
     void createCategory_ValidRequest_Created() throws Exception {
         CreateCategoryRequestDto requestDto = new CreateCategoryRequestDto(
@@ -75,11 +76,6 @@ class CategoryControllerTest {
 
     @WithMockUser(username = "user")
     @Test
-    @Sql(scripts = {"classpath:database/categories/remove-category-from-categories-table.sql",
-            "classpath:database/categories/add-three-categories-to-categories-table.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database/categories/remove-category-from-categories-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("Get all categories")
     void getAll_CategoriesFromDb_ReturnAllCategories() throws Exception {
         List<CategoryDto> expected = new ArrayList<>();
@@ -102,9 +98,6 @@ class CategoryControllerTest {
 
     @WithMockUser(username = "user")
     @Test
-    @Sql(scripts = {"classpath:database/categories/remove-category-from-categories-table.sql",
-            "classpath:database/categories/add-category-to-categories-table.sql"},
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @DisplayName("Get category by id")
     void getCategoryById_ValidId_ReturnedCategory() throws Exception {
         Long id = 1L;
@@ -127,15 +120,13 @@ class CategoryControllerTest {
     @WithMockUser(username = "user", roles = {"ADMIN"})
     @Test
     @DisplayName("Delete category with valid id")
-    @Sql(scripts = "classpath:database/categories/add-category-to-categories-table.sql",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void deleteCategory_ValidId_IsOk() throws Exception {
         Long id = 1L;
 
         MvcResult result = mockMvc.perform(
                         delete("/api/categories/" + id)
                                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andReturn();
     }
 }

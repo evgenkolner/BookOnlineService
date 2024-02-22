@@ -29,6 +29,10 @@ import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = {"classpath:database/books/remove-all-books-from-books-table.sql",
+        "classpath:database/categories/remove-category-from-categories-table.sql"},
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:database/books/add-three-books-to-books-table.sql")
 class BookControllerTest {
 
     protected static MockMvc mockMvc;
@@ -70,6 +74,7 @@ class BookControllerTest {
                 .andReturn();
 
         BookDto expected = new BookDto()
+                .setId(1L)
                 .setTitle(requestDto.title())
                 .setAuthor(requestDto.author())
                 .setIsbn(requestDto.isbn())
@@ -88,10 +93,6 @@ class BookControllerTest {
 
     @WithMockUser(username = "user")
     @Test
-    @Sql(scripts = "classpath:database/books/add-three-books-to-books-table.sql",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database/books/remove-all-books-from-books-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     @DisplayName("Get all books")
     void getAll_BooksFromDb_ReturnAllBooks() throws Exception {
         List<BookDto> expected = new ArrayList<>();
@@ -120,11 +121,6 @@ class BookControllerTest {
 
     @WithMockUser(username = "user")
     @Test
-    @Sql(scripts = "classpath:database/books/add-one-book-to-books-table.sql",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = "classpath:database/books/remove-all-books-from-books-table.sql",
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    @DisplayName("Get book by valid id")
     void getBookById_ValidId_ReturnedBook() throws Exception {
         Long id = 1L;
 
@@ -148,15 +144,13 @@ class BookControllerTest {
     @WithMockUser(username = "user", roles = {"ADMIN"})
     @Test
     @DisplayName("Delete book with valid id")
-    @Sql(scripts = "classpath:database/books/add-one-book-to-books-table.sql",
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void delete_ValidId_IsOk() throws Exception {
         Long id = 1L;
 
         MvcResult result = mockMvc.perform(
                         delete("/api/books/" + id)
                                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andReturn();
     }
 }
